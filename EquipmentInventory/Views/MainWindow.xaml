@@ -1,0 +1,78 @@
+﻿<Window x:Class="EquipmentInventory.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:EquipmentInventory.ViewModels"
+        mc:Ignorable="d"
+        Title="Учет оборудования" Height="450" Width="500">
+
+    <Window.Resources>
+        <viewModels:MainViewModel x:Key="MainVM"/>
+    </Window.Resources>
+
+    <Window.DataContext>
+        <StaticResource ResourceKey="MainVM"/>
+    </Window.DataContext>
+
+    <StackPanel Margin="20" VerticalAlignment="Top">
+
+        <!-- Название устройства -->
+        <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" 
+                 Margin="0 0 0 10"
+                 Height="25"
+                 ToolTip="Введите наименование устройства" />
+
+        <!-- Тип устройства -->
+        <ComboBox ItemsSource="{Binding DeviceTypes}" 
+                  SelectedItem="{Binding SelectedType}" 
+                  Margin="0 0 0 10"
+                  Height="25"/>
+
+        <!-- Статус устройства -->
+        <ComboBox ItemsSource="{Binding DeviceStatuses}" 
+                  SelectedItem="{Binding SelectedStatus}" 
+                  Margin="0 0 0 10"
+                  Height="25"/>
+
+        <!-- Кнопка добавления -->
+        <Button Content="Добавить устройство" 
+                Command="{Binding AddDeviceCommand}" 
+                Margin="0 10 0 10"
+                Height="30"/>
+
+        <!-- Таблица устройств -->
+        <DataGrid x:Name="dataGrid"
+                  ItemsSource="{Binding Devices}" 
+                  AutoGenerateColumns="False" 
+                  Height="200"
+                  CanUserAddRows="False"
+                  Margin="0 10 0 0"
+                  RowEditEnding ="DataGrid_RowEditEnding">
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Наименование" 
+                                    Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+
+                <DataGridComboBoxColumn Header="Тип"
+                                        SelectedItemBinding="{Binding Type, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                        ItemsSource="{Binding Source={StaticResource MainVM}, Path=DeviceTypes}" />
+
+                <DataGridComboBoxColumn Header="Статус"
+                                        SelectedItemBinding="{Binding Status, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                        ItemsSource="{Binding Source={StaticResource MainVM}, Path=DeviceStatuses}" />
+
+                <!-- Кнопка Удалить -->
+                <DataGridTemplateColumn Header="Удалить">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Удалить"
+                                    Command="{Binding DataContext.DeleteDeviceCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    CommandParameter="{Binding}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </StackPanel>
+</Window>
